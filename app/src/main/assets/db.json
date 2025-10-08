@@ -12,7 +12,8 @@
       "numero": "+51 942 303 202",
       "direccion": "Calle del Solar 102, 23203",
       "metodoPago": "xxxx xxxx xxx 3420",
-      "viajes": 0
+      "viajes": 0,
+      "tipo": "Ciclista"
     },
     {
       "id": 2,
@@ -26,7 +27,102 @@
       "numero": "+51 987 654 321",
       "direccion": "Av. La Marina 800",
       "metodoPago": "xxxx xxxx xxx 2210",
-      "viajes": 5
+      "viajes": 5,
+      "tipo": "Ciclista"
+    },
+    {
+      "id": 4,
+      "usuario": "proveedor",
+      "contrasena": "1234",
+      "nombre": "Carlos",
+      "apellido": "Proveedor",
+      "correo": "carlos.proveedor@bikelab.pe",
+      "universidad": "UPC - Monterrico",
+      "codigo": "PROV001",
+      "numero": "+51 987 123 456",
+      "direccion": "Av. Primavera 123, Monterrico",
+      "metodoPago": "xxxx xxxx xxx 3420",
+      "viajes": 0,
+      "tipo": "Arrendatario"
+    }
+  ],
+  "proveedores": [
+    {
+      "id": 1,
+      "nombre": "Juan",
+      "apellido": "Carlos",
+      "correo": "juan.carlos@bikelab.pe",
+      "telefono": "+51 987 123 456",
+      "direccion": "Av. Primavera 123, Monterrico",
+      "rating": 4.7,
+      "bicicletasRegistradas": 2,
+      "fechaRegistro": "2024-01-15",
+      "imagenPerfil": "juan_carlos.jpg"
+    },
+    {
+      "id": 2,
+      "nombre": "Pedro",
+      "apellido": "Polo",
+      "correo": "pedro.polo@bikelab.pe",
+      "telefono": "+51 987 654 321",
+      "direccion": "Jr. Morro Solar 456, San Miguel",
+      "rating": 4.5,
+      "bicicletasRegistradas": 1,
+      "fechaRegistro": "2024-02-20",
+      "imagenPerfil": "pedro_polo.jpg"
+    },
+    {
+      "id": 3,
+      "nombre": "Caesar",
+      "apellido": "Cordova",
+      "correo": "caesar.cordova@bikelab.pe",
+      "telefono": "+51 987 789 012",
+      "direccion": "C. Monte de Oca 789, Monterrico",
+      "rating": 5.0,
+      "bicicletasRegistradas": 1,
+      "fechaRegistro": "2024-03-10",
+      "imagenPerfil": "caesar_cordova.jpg"
+    }
+  ],
+  "bicicletas": [
+    {
+      "id": 1,
+      "proveedorId": 1,
+      "modelo": "SPECIALIZED ENDURO",
+      "marca": "Specialized",
+      "tipo": "Mountain Bike",
+      "precioPorHora": 10.00,
+      "ubicacion": "UPC - Monterrico",
+      "disponible": true,
+      "rating": 4.7,
+      "descripcion": "Bicicleta de montaña especializada para terrenos difíciles",
+      "imagen": "specialized_enduro.jpg"
+    },
+    {
+      "id": 2,
+      "proveedorId": 2,
+      "modelo": "CANNONDALE SCALPEL",
+      "marca": "Cannondale",
+      "tipo": "Cross Country",
+      "precioPorHora": 12.00,
+      "ubicacion": "UPC - San Miguel",
+      "disponible": true,
+      "rating": 4.5,
+      "descripcion": "Bicicleta de cross country ligera y eficiente",
+      "imagen": "cannondale_scalpel.jpg"
+    },
+    {
+      "id": 3,
+      "proveedorId": 3,
+      "modelo": "SCOTT SPARK",
+      "marca": "Scott",
+      "tipo": "Trail",
+      "precioPorHora": 12.50,
+      "ubicacion": "UPC - Monterrico",
+      "disponible": true,
+      "rating": 5.0,
+      "descripcion": "Bicicleta trail versátil para todo tipo de terreno",
+      "imagen": "scott_spark.jpg"
     }
   ]
 }

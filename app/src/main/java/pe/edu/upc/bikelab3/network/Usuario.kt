@@ -12,5 +12,6 @@ data class Usuario(
     val numero: String,
     val direccion: String,
     val metodoPago: String,
-    val viajes: Int
+    val viajes: Int,
+    val tipo: String = "Ciclista" // Por defecto es Ciclista
 )

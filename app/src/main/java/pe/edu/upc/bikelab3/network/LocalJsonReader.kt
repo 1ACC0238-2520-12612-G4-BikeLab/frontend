@@ -11,4 +11,34 @@ object LocalJsonReader {
         val data: Map<String, List<Usuario>> = Gson().fromJson(jsonString, type)
         return data["usuarios"] ?: emptyList()
     }
+    
+    fun getBicicletas(context: Context): List<Bicicleta> {
+        val jsonString = context.assets.open("db.json").bufferedReader().use { it.readText() }
+        val type = object : TypeToken<Map<String, List<Bicicleta>>>() {}.type
+        val data: Map<String, List<Bicicleta>> = Gson().fromJson(jsonString, type)
+        return data["bicicletas"] ?: emptyList()
+    }
+    
+    fun getBicicletasDisponibles(context: Context): List<Bicicleta> {
+        return getBicicletas(context).filter { it.disponible }
+    }
+    
+    fun getProveedores(context: Context): List<Proveedor> {
+        val jsonString = context.assets.open("db.json").bufferedReader().use { it.readText() }
+        val type = object : TypeToken<Map<String, List<Proveedor>>>() {}.type
+        val data: Map<String, List<Proveedor>> = Gson().fromJson(jsonString, type)
+        return data["proveedores"] ?: emptyList()
+    }
+    
+    fun getBicicletaConProveedor(context: Context, bicicletaId: Int): Pair<Bicicleta?, Proveedor?> {
+        val bicicletas = getBicicletas(context)
+        val proveedores = getProveedores(context)
+        
+        val bicicleta = bicicletas.find { it.id == bicicletaId }
+        val proveedor = bicicleta?.let { 
+            proveedores.find { proveedor -> proveedor.id == it.proveedorId }
+        }
+        
+        return Pair(bicicleta, proveedor)
+    }
 }
