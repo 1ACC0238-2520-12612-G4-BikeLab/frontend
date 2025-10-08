@@ -1,0 +1,32 @@
+{
+  "usuarios": [
+    {
+      "id": 1,
+      "usuario": "violet",
+      "contrasena": "1234",
+      "nombre": "Violet",
+      "apellido": "Norman",
+      "correo": "nomi@gmail.com",
+      "universidad": "UPC - Monterrico",
+      "codigo": "U20231A830",
+      "numero": "+51 942 303 202",
+      "direccion": "Calle del Solar 102, 23203",
+      "metodoPago": "xxxx xxxx xxx 3420",
+      "viajes": 0
+    },
+    {
+      "id": 2,
+      "usuario": "sebastian",
+      "contrasena": "admin",
+      "nombre": "Sebastian",
+      "apellido": "Hernandez",
+      "correo": "sebastian@bikelab.pe",
+      "universidad": "UPC - San Miguel",
+      "codigo": "U20211B150",
+      "numero": "+51 987 654 321",
+      "direccion": "Av. La Marina 800",
+      "metodoPago": "xxxx xxxx xxx 2210",
+      "viajes": 5
+    }
+  ]
+}
