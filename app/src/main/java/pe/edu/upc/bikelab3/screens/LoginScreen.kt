@@ -53,9 +53,9 @@ fun LoginScreen(navController: NavController) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 32.dp),
+                    .padding(horizontal = 32.dp, vertical = 80.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Top
             ) {
                 // Logo y título
                 Row(
@@ -63,7 +63,7 @@ fun LoginScreen(navController: NavController) {
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.logo_bikelab),
+                        painter = painterResource(id = R.drawable.bikelablogo),
                         contentDescription = "Logo BikeLab",
                         modifier = Modifier.size(48.dp)
                     )

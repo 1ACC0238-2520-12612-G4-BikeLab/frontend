@@ -41,4 +41,9 @@ object LocalJsonReader {
         
         return Pair(bicicleta, proveedor)
     }
+    
+    fun getUsuarioPorId(context: Context, usuarioId: Int): Usuario? {
+        val usuarios = getUsuarios(context)
+        return usuarios.find { it.id == usuarioId }
+    }
 }

@@ -8,10 +8,12 @@ data class Alquiler(
     val usuarioId: Int,
     val fechaInicio: String,
     val fechaFin: String,
-    val precioTotal: Double,
-    val estado: String, // "ACTIVO", "COMPLETADO", "CANCELADO"
+    val precioPorHora: Double,
+    val estado: String, // "PENDIENTE", "ACTIVO", "COMPLETADO", "CANCELADO"
     val ubicacionRecogida: String,
     val ubicacionDevolucion: String,
-    val notas: String = ""
+    val notas: String = "",
+    val tiempoInicioActivo: Long = 0L, // Timestamp cuando se activó el alquiler
+    val precioTotal: Double = 0.0 // Precio total calculado dinámicamente
 )
 

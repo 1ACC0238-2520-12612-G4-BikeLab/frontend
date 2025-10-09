@@ -56,11 +56,11 @@ fun ArrendatarioProfileScreen(navController: NavController) {
                         horizontalArrangement = Arrangement.Center,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.logo_bikelab),
-                            contentDescription = "Logo BikeLab",
-                            modifier = Modifier.size(32.dp)
-                        )
+                    Image(
+                        painter = painterResource(id = R.drawable.bikelablogo),
+                        contentDescription = "Logo BikeLab",
+                        modifier = Modifier.size(32.dp)
+                    )
 
                         Spacer(modifier = Modifier.width(8.dp))
 

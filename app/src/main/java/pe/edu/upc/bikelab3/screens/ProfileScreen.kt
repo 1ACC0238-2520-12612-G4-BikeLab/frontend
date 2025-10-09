@@ -71,7 +71,7 @@ fun ProfileScreen(navController: NavController) {
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.logo_bikelab),
+                        painter = painterResource(id = R.drawable.bikelablogo),
                         contentDescription = "Logo BikeLab",
                         modifier = Modifier.size(32.dp)
                     )
@@ -110,17 +110,17 @@ fun ProfileScreen(navController: NavController) {
         )
 
         // Contenido principal
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Título "MI PERFIL"
             Row(
                 verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
+    ) {
+        Text(
                     text = "MI",
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
@@ -160,7 +160,7 @@ fun ProfileScreen(navController: NavController) {
                             contentAlignment = Alignment.Center
                         ) {
                             Image(
-                                painter = painterResource(id = R.drawable.logo_bikelab),
+                                painter = painterResource(id = R.drawable.bikelablogo),
                                 contentDescription = "Avatar",
                                 modifier = Modifier.size(50.dp)
                             )

@@ -49,7 +49,7 @@ fun NotificationsScreen(navController: NavController) {
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.logo_bikelab),
+                        painter = painterResource(id = R.drawable.bikelablogo),
                         contentDescription = "Logo BikeLab",
                         modifier = Modifier.size(32.dp)
                     )
@@ -181,7 +181,7 @@ private fun NotificationCard(
                 when (notification.tipo) {
                     "BIKELAB", "SISTEMA" -> {
                         Image(
-                            painter = painterResource(id = R.drawable.logo_bikelab),
+                            painter = painterResource(id = R.drawable.bikelablogo),
                             contentDescription = "Logo BikeLab",
                             modifier = Modifier.size(30.dp)
                         )

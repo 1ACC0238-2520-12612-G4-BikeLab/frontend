@@ -8,5 +8,6 @@ data class VehiculoRegistrado(
     val precioPorDia: String,
     val ubicacionActual: String,
     val propietarioId: Int, // ID del arrendatario que lo registró
-    val fechaRegistro: String
+    val fechaRegistro: String,
+    val disponible: Boolean = true
 )

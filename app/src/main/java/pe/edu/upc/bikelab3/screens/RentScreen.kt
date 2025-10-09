@@ -113,7 +113,7 @@ fun RentScreen(navController: NavController, bicicletaId: Int) {
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.logo_bikelab),
+                        painter = painterResource(id = R.drawable.bikelablogo),
                         contentDescription = "Logo BikeLab",
                         modifier = Modifier.size(32.dp)
                     )
@@ -171,7 +171,7 @@ fun RentScreen(navController: NavController, bicicletaId: Int) {
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.logo_bikelab),
+                        painter = painterResource(id = R.drawable.bikelablogo),
                         contentDescription = "Profile",
                         modifier = Modifier.size(40.dp)
                     )
@@ -213,21 +213,15 @@ fun RentScreen(navController: NavController, bicicletaId: Int) {
             }
             
             // Imagen de la bicicleta
-            Box(
+            Image(
+                painter = painterResource(id = R.drawable.teclaproveedores),
+                contentDescription = "Imagen de la bicicleta ${bicicleta.modelo}",
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(250.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Color.LightGray),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "IMAGEN DE LA BICICLETA\n${bicicleta.modelo}",
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                    color = Color.DarkGray,
-                    fontSize = 16.sp
-                )
-            }
+                    .clip(RoundedCornerShape(12.dp)),
+                contentScale = androidx.compose.ui.layout.ContentScale.Crop
+            )
             
             Spacer(modifier = Modifier.height(16.dp))
             
@@ -243,7 +237,6 @@ fun RentScreen(navController: NavController, bicicletaId: Int) {
                     // Detalles de la bicicleta
                     DetailRow("MODELO", bicicleta.modelo)
                     DetailRow("TIEMPO DE USO", if (vehiculoRegistrado != null) "Recién añadido" else "2 años")
-                    DetailRow("ACEPTO", "Silver")
                     DetailRow("ACEPTO", "Yape, Plin")
                     
                     // Línea separadora
@@ -359,11 +352,13 @@ fun RentScreen(navController: NavController, bicicletaId: Int) {
                                     usuarioId = currentUser.id,
                                     fechaInicio = "2024-12-19",
                                     fechaFin = "2024-12-20",
-                                    precioTotal = bicicleta.precioPorHora * 24, // 24 horas
-                                    estado = "ACTIVO",
+                                    precioPorHora = bicicleta.precioPorHora,
+                                    estado = "PENDIENTE",
                                     ubicacionRecogida = bicicleta.ubicacion,
                                     ubicacionDevolucion = bicicleta.ubicacion,
-                                    notas = "Alquiler de ${bicicleta.modelo}"
+                                    notas = "Alquiler de ${bicicleta.modelo}",
+                                    tiempoInicioActivo = 0L,
+                                    precioTotal = 0.0
                                 )
                                 ReservationManager.addRental(nuevoAlquiler)
                                 

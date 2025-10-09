@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 import pe.edu.upc.bikelab3.R
 import pe.edu.upc.bikelab3.network.Alquiler
 import pe.edu.upc.bikelab3.network.Bicicleta
@@ -88,7 +89,7 @@ fun HomeScreen(navController: NavController) {
                             contentAlignment = Alignment.Center
                         ) {
                             Image(
-                                painter = painterResource(id = R.drawable.logo_bikelab),
+                                painter = painterResource(id = R.drawable.bikelablogo),
                                 contentDescription = "Avatar",
                                 modifier = Modifier.size(40.dp)
                             )
@@ -178,7 +179,7 @@ fun HomeScreen(navController: NavController) {
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Image(
-                                painter = painterResource(id = R.drawable.logo_bikelab),
+                                painter = painterResource(id = R.drawable.bikelablogo),
                                 contentDescription = "Logo BikeLab",
                                 modifier = Modifier.size(32.dp)
                             )
@@ -235,7 +236,7 @@ fun HomeScreen(navController: NavController) {
                             navController.navigate("notifications")
                         }
                     }
-                    Section.MIS_ALQUILERES -> MisAlquileresContent()
+                    Section.MIS_ALQUILERES -> MisAlquileresContent(navController)
                     Section.PERFIL -> {
                         LaunchedEffect(Unit) {
                             navController.navigate("profile")
@@ -301,21 +302,13 @@ private fun HomeContent(navController: NavController) {
         modifier = Modifier.fillMaxSize()
     ) {
         // Sección del mapa
-        Box(
+        Image(
+            painter = painterResource(id = R.drawable.mapaplaceholder),
+            contentDescription = "Mapa interactivo",
             modifier = Modifier
                 .fillMaxWidth()
                 .height(400.dp)
-                .background(Color.LightGray),
-            contentAlignment = Alignment.Center
-        ) {
-            // Placeholder del mapa
-            Text(
-                text = "MAPA INTERACTIVO\n📍 Marcadores de vehículos verdes\n\n${todosLosVehiculosDisponibles.size} vehículos disponibles",
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                color = Color.DarkGray,
-                fontSize = 16.sp
-            )
-        }
+        )
         
         // Sección de vehículos disponibles
         Column(
@@ -359,13 +352,18 @@ private fun HomeContent(navController: NavController) {
 @Composable private fun NotificationsContent() =
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("Notificaciones 📢") }
 
-@Composable private fun MisAlquileresContent() {
+@Composable private fun MisAlquileresContent(navController: NavController) {
     val context = LocalContext.current
-    val alquileresUsuario = remember { ReservationManager.getUserRentals() }
+    var alquileresUsuario by remember { mutableStateOf(ReservationManager.getUserRentals()) }
     val todasLasBicicletas = remember { LocalJsonReader.getBicicletas(context) }
     val todosLosProveedores = remember { LocalJsonReader.getProveedores(context) }
     
-    // Alquileres predefinidos para mostrar siempre
+    // Función para refrescar los alquileres
+    fun refreshRentals() {
+        alquileresUsuario = ReservationManager.getUserRentals()
+    }
+    
+    // Alquileres predefinidos con datos más aleatorios y realistas
     val alquileresPredefinidos = remember {
         listOf(
             Alquiler(
@@ -374,11 +372,13 @@ private fun HomeContent(navController: NavController) {
                 usuarioId = 1,
                 fechaInicio = "2024-12-15",
                 fechaFin = "2024-12-16",
-                precioTotal = 240.0,
+                precioPorHora = 10.0,
                 estado = "COMPLETADO",
                 ubicacionRecogida = "UPC - Monterrico",
                 ubicacionDevolucion = "UPC - Monterrico",
-                notas = "Alquiler completado exitosamente"
+                notas = "Alquiler completado exitosamente",
+                tiempoInicioActivo = 0L,
+                precioTotal = 180.0
             ),
             Alquiler(
                 id = 1002,
@@ -386,11 +386,126 @@ private fun HomeContent(navController: NavController) {
                 usuarioId = 1,
                 fechaInicio = "2024-12-10",
                 fechaFin = "2024-12-11",
-                precioTotal = 288.0,
+                precioPorHora = 12.0,
                 estado = "COMPLETADO",
                 ubicacionRecogida = "UPC - San Miguel",
                 ubicacionDevolucion = "UPC - San Miguel",
-                notas = "Excelente servicio"
+                notas = "Excelente servicio",
+                tiempoInicioActivo = 0L,
+                precioTotal = 200.0
+            ),
+            Alquiler(
+                id = 1003,
+                bicicletaId = 3,
+                usuarioId = 1,
+                fechaInicio = "2024-12-05",
+                fechaFin = "2024-12-06",
+                precioPorHora = 12.5,
+                estado = "COMPLETADO",
+                ubicacionRecogida = "UPC - Monterrico",
+                ubicacionDevolucion = "UPC - Monterrico",
+                notas = "Bicicleta en excelente estado",
+                tiempoInicioActivo = 0L,
+                precioTotal = 220.0
+            ),
+            Alquiler(
+                id = 1004,
+                bicicletaId = 1,
+                usuarioId = 1,
+                fechaInicio = "2024-11-28",
+                fechaFin = "2024-11-29",
+                precioPorHora = 10.0,
+                estado = "COMPLETADO",
+                ubicacionRecogida = "UPC - Monterrico",
+                ubicacionDevolucion = "UPC - Monterrico",
+                notas = "Segundo alquiler",
+                tiempoInicioActivo = 0L,
+                precioTotal = 190.0
+            ),
+            Alquiler(
+                id = 1005,
+                bicicletaId = 2,
+                usuarioId = 1,
+                fechaInicio = "2024-11-20",
+                fechaFin = "2024-11-21",
+                precioPorHora = 12.0,
+                estado = "COMPLETADO",
+                ubicacionRecogida = "UPC - San Miguel",
+                ubicacionDevolucion = "UPC - San Miguel",
+                notas = "Primer alquiler",
+                tiempoInicioActivo = 0L,
+                precioTotal = 210.0
+            )
+        )
+    }
+    
+    // Crear bicicletas ficticias para los alquileres predefinidos
+    val bicicletasFicticias = remember {
+        mapOf(
+            1001 to Bicicleta(
+                id = 1,
+                proveedorId = 1,
+                modelo = "TREK FUEL EX",
+                marca = "Trek",
+                tipo = "Mountain Bike",
+                precioPorHora = 10.0,
+                ubicacion = "UPC - Monterrico",
+                disponible = true,
+                rating = 4.8,
+                descripcion = "Bicicleta de montaña de alta gama",
+                imagen = "trek_fuel.jpg"
+            ),
+            1002 to Bicicleta(
+                id = 2,
+                proveedorId = 2,
+                modelo = "GIANT TRINITY",
+                marca = "Giant",
+                tipo = "Road Bike",
+                precioPorHora = 12.0,
+                ubicacion = "UPC - San Miguel",
+                disponible = true,
+                rating = 4.6,
+                descripcion = "Bicicleta de carretera profesional",
+                imagen = "giant_trinity.jpg"
+            ),
+            1003 to Bicicleta(
+                id = 3,
+                proveedorId = 3,
+                modelo = "CANNONDALE JEKILL",
+                marca = "Cannondale",
+                tipo = "Trail",
+                precioPorHora = 12.5,
+                ubicacion = "UPC - Monterrico",
+                disponible = true,
+                rating = 4.9,
+                descripcion = "Bicicleta trail versátil",
+                imagen = "cannondale_jekyll.jpg"
+            ),
+            1004 to Bicicleta(
+                id = 4,
+                proveedorId = 1,
+                modelo = "SANTACRUZ HIGHTOWER",
+                marca = "Santa Cruz",
+                tipo = "Enduro",
+                precioPorHora = 10.0,
+                ubicacion = "UPC - Monterrico",
+                disponible = true,
+                rating = 4.7,
+                descripcion = "Bicicleta enduro de alta performance",
+                imagen = "santacruz_hightower.jpg"
+            ),
+            1005 to Bicicleta(
+                id = 5,
+                proveedorId = 2,
+                modelo = "ORBEA OIZ",
+                marca = "Orbea",
+                tipo = "Cross Country",
+                precioPorHora = 12.0,
+                ubicacion = "UPC - San Miguel",
+                disponible = true,
+                rating = 4.5,
+                descripcion = "Bicicleta de cross country ligera",
+                imagen = "orbea_oiz.jpg"
             )
         )
     }
@@ -401,25 +516,42 @@ private fun HomeContent(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .background(Color.Black)
     ) {
+        // Título principal
         Text(
-            text = "Mis Alquileres",
+            text = "MIS ALQUILERES",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.Black,
-            modifier = Modifier.padding(bottom = 16.dp)
+            color = Color.White,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 24.dp),
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
         
+        // Lista de alquileres
         LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(0.dp)
         ) {
             items(todosLosAlquileres) { alquiler ->
-                AlquilerCard(
+                NuevoAlquilerItem(
                     alquiler = alquiler,
                     bicicletas = todasLasBicicletas,
-                    proveedores = todosLosProveedores
+                    proveedores = todosLosProveedores,
+                    navController = navController,
+                    onRefresh = { refreshRentals() }
                 )
+                
+                // Separador verde entre items (excepto el último)
+                if (alquiler != todosLosAlquileres.last()) {
+                    HorizontalDivider(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        color = colorResource(id = R.color.lime_green),
+                        thickness = 1.dp
+                    )
+                }
             }
         }
     }
@@ -482,7 +614,7 @@ private fun BikeCardFromDB(
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.logo_bikelab),
+                    painter = painterResource(id = R.drawable.bikelablogo),
                     contentDescription = "Profile",
                     modifier = Modifier.size(30.dp)
                 )
@@ -549,112 +681,105 @@ private fun BikeCardFromDB(
     }
 }
 
-// Componente para mostrar cada alquiler
+// Nuevo componente de alquiler estilo imagen
 @Composable
-private fun AlquilerCard(
+private fun NuevoAlquilerItem(
     alquiler: Alquiler,
     bicicletas: List<Bicicleta>,
-    proveedores: List<Proveedor>
+    proveedores: List<Proveedor>,
+    navController: NavController,
+    onRefresh: () -> Unit
 ) {
-    val bicicleta = bicicletas.find { it.id == alquiler.bicicletaId }
+    // Usar bicicleta ficticia para alquileres predefinidos, o buscar en la lista real
+    val bicicleta = if (alquiler.id >= 1001) {
+        // Alquiler predefinido - usar bicicleta ficticia
+        when (alquiler.id) {
+            1001 -> Bicicleta(id = 1, proveedorId = 1, modelo = "TREK FUEL EX", marca = "Trek", tipo = "Mountain Bike", precioPorHora = 10.0, ubicacion = "UPC - Monterrico", disponible = true, rating = 4.8, descripcion = "Bicicleta de montaña de alta gama", imagen = "trek_fuel.jpg")
+            1002 -> Bicicleta(id = 2, proveedorId = 2, modelo = "GIANT TRINITY", marca = "Giant", tipo = "Road Bike", precioPorHora = 12.0, ubicacion = "UPC - San Miguel", disponible = true, rating = 4.6, descripcion = "Bicicleta de carretera profesional", imagen = "giant_trinity.jpg")
+            1003 -> Bicicleta(id = 3, proveedorId = 3, modelo = "CANNONDALE JEKILL", marca = "Cannondale", tipo = "Trail", precioPorHora = 12.5, ubicacion = "UPC - Monterrico", disponible = true, rating = 4.9, descripcion = "Bicicleta trail versátil", imagen = "cannondale_jekyll.jpg")
+            1004 -> Bicicleta(id = 4, proveedorId = 1, modelo = "SANTACRUZ HIGHTOWER", marca = "Santa Cruz", tipo = "Enduro", precioPorHora = 10.0, ubicacion = "UPC - Monterrico", disponible = true, rating = 4.7, descripcion = "Bicicleta enduro de alta performance", imagen = "santacruz_hightower.jpg")
+            1005 -> Bicicleta(id = 5, proveedorId = 2, modelo = "ORBEA OIZ", marca = "Orbea", tipo = "Cross Country", precioPorHora = 12.0, ubicacion = "UPC - San Miguel", disponible = true, rating = 4.5, descripcion = "Bicicleta de cross country ligera", imagen = "orbea_oiz.jpg")
+            else -> bicicletas.find { it.id == alquiler.bicicletaId }
+        }
+    } else {
+        // Alquiler del usuario - buscar en la lista real
+        bicicletas.find { it.id == alquiler.bicicletaId }
+    }
+    
     val proveedor = bicicleta?.let { 
         proveedores.find { prov -> prov.id == it.proveedorId }
     }
     
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        shape = RoundedCornerShape(8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = bicicleta?.modelo ?: "Bicicleta no encontrada",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                )
-                
-                // Estado del alquiler
-                Box(
-                    modifier = Modifier
-                        .background(
-                            when (alquiler.estado) {
-                                "ACTIVO" -> colorResource(id = R.color.lime_green)
-                                "COMPLETADO" -> Color.Blue
-                                "CANCELADO" -> Color.Red
-                                else -> Color.Gray
-                            },
-                            RoundedCornerShape(12.dp)
-                        )
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
-                ) {
-                    Text(
-                        text = alquiler.estado,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                }
-            }
-            
-            Spacer(modifier = Modifier.height(8.dp))
-            
-            Text(
-                text = "Proveedor: ${proveedor?.nombre ?: "Proveedor"} ${proveedor?.apellido ?: ""}",
-                fontSize = 14.sp,
-                color = Color.Gray
-            )
-            
-            Text(
-                text = "Fecha: ${alquiler.fechaInicio} - ${alquiler.fechaFin}",
-                fontSize = 14.sp,
-                color = Color.Gray
-            )
-            
-            Text(
-                text = "Ubicación: ${alquiler.ubicacionRecogida}",
-                fontSize = 14.sp,
-                color = Color.Gray
-            )
-            
-            Spacer(modifier = Modifier.height(8.dp))
-            
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Total: S/ ${String.format("%.2f", alquiler.precioTotal)}",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = colorResource(id = R.color.lime_green)
-                )
-                
-                if (alquiler.estado == "ACTIVO") {
-                    Button(
-                        onClick = { /* Lógica para finalizar alquiler */ },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = colorResource(id = R.color.lime_green)
-                        ),
-                        shape = RoundedCornerShape(8.dp)
-                    ) {
-                        Text(
-                            text = "Finalizar",
-                            fontSize = 12.sp,
-                            color = Color.White
-                        )
-                    }
-                }
-            }
+    // Formatear fecha para mostrar
+    val fechaFormateada = when (alquiler.estado) {
+        "COMPLETADO" -> {
+            val fecha = java.time.LocalDate.parse(alquiler.fechaInicio)
+            val formatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")
+            fecha.format(formatter)
         }
+        "PENDIENTE" -> "Pendiente"
+        "ACTIVO" -> "Activo"
+        else -> "Activo"
+    }
+    
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp)
+            .clickable { 
+                // Navegar a la pantalla de detalles del alquiler
+                navController.navigate("alquiler-detail/${alquiler.id}")
+            },
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Avatar circular (usando el logo por ahora)
+        Box(
+            modifier = Modifier
+                .size(50.dp)
+                .clip(CircleShape)
+                .background(Color.Gray),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.bikelablogo),
+                contentDescription = "Avatar",
+                modifier = Modifier.size(30.dp)
+            )
+        }
+        
+        Spacer(modifier = Modifier.width(16.dp))
+        
+        // Información del alquiler
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = "Bicicleta ${bicicleta?.modelo ?: "Desconocida"}",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color.White
+            )
+            
+            Spacer(modifier = Modifier.height(4.dp))
+            
+            Text(
+                text = when (alquiler.estado) {
+                    "COMPLETADO" -> "Finalizado - $fechaFormateada"
+                    "PENDIENTE" -> "Pendiente"
+                    "ACTIVO" -> "Activo"
+                    else -> "Activo"
+                },
+                fontSize = 14.sp,
+                color = Color.White
+            )
+        }
+        
+        // Indicador de dropdown (texto simple)
+        Text(
+            text = "▼",
+            fontSize = 16.sp,
+            color = colorResource(id = R.color.lime_green),
+            modifier = Modifier.padding(8.dp)
+        )
     }
 }
