@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1099435841686",
+    "project_id": "bikelabmobile",
+    "storage_bucket": "bikelabmobile.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1099435841686:android:61b0adaa94db53281e4ab7",
+        "android_client_info": {
+          "package_name": "com.bikelab.android"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSs1tkI9-ihGJcFWKqccCvRY9FxqK7MYQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

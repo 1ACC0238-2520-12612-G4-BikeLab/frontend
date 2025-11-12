@@ -30,6 +30,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
@@ -41,6 +47,12 @@ import pe.edu.upc.bikelab3.network.Proveedor
 import pe.edu.upc.bikelab3.network.ReservationManager
 import pe.edu.upc.bikelab3.network.UserSession
 import pe.edu.upc.bikelab3.network.VehiculoManager
+
+private data class BikeCenterInfo(
+    val title: String,
+    val position: LatLng,
+    val snippet: String
+)
 
 enum class Section { INICIO, UBICACION, NOTIFICACIONES, MIS_ALQUILERES, PERFIL }
 
@@ -62,8 +74,11 @@ fun HomeScreen(navController: NavController) {
         return
     }
 
+    val gesturesEnabled = drawerState.isOpen || section != Section.INICIO
+
     ModalNavigationDrawer(
         drawerState = drawerState,
+        gesturesEnabled = gesturesEnabled,
         drawerContent = {
             ModalDrawerSheet {
                 // Perfil del usuario en la parte superior
@@ -275,6 +290,22 @@ private fun HomeContent(navController: NavController) {
     }
     
     // Obtener vehículos registrados por arrendatarios
+    val upcMonterrico = remember {
+        LatLng(-12.086371, -76.971504)
+    }
+    val baseBikeCenters = remember {
+        listOf(
+            "UPC Monterrico" to upcMonterrico,
+            "Centro Bike La Encalada" to LatLng(-12.089912, -76.972843),
+            "BiciPoint Primavera" to LatLng(-12.083145, -76.976892),
+            "Riders Jockey Plaza" to LatLng(-12.089571, -76.977983),
+            "EcoBike Casuarinas" to LatLng(-12.080456, -76.965238),
+            "Monterrico Bike Hub" to LatLng(-12.094128, -76.968741)
+        )
+    }
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(upcMonterrico, 15f)
+    }
     val vehiculosRegistrados = remember {
         VehiculoManager.getAllVehiculos()
     }
@@ -297,18 +328,35 @@ private fun HomeContent(navController: NavController) {
             )
         }
     }
+    val bikeCenters = remember(todosLosVehiculosDisponibles) {
+        baseBikeCenters.mapIndexed { index, (title, position) ->
+            val vehiculo = todosLosVehiculosDisponibles.getOrNull(index)
+            val snippet = vehiculo?.let {
+                val precio = String.format("%.2f", it.precioPorHora)
+                "Modelo: ${it.modelo} • Tipo: ${it.tipo} • S/ $precio por hora"
+            } ?: "Centro de bicicletas cercano"
+            BikeCenterInfo(title, position, snippet)
+        }
+    }
     
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
         // Sección del mapa
-        Image(
-            painter = painterResource(id = R.drawable.mapaplaceholder),
-            contentDescription = "Mapa interactivo",
+        GoogleMap(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(400.dp)
-        )
+                .height(400.dp),
+            cameraPositionState = cameraPositionState
+        ) {
+            bikeCenters.forEach { center ->
+                Marker(
+                    state = MarkerState(position = center.position),
+                    title = center.title,
+                    snippet = center.snippet
+                )
+            }
+        }
         
         // Sección de vehículos disponibles
         Column(
