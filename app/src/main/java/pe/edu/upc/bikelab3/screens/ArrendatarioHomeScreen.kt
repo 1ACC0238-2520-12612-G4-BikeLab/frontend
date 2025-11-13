@@ -20,6 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.activity.compose.BackHandler
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import pe.edu.upc.bikelab3.R
@@ -39,6 +40,13 @@ fun ArrendatarioHomeScreen(navController: NavController) {
     var precioHora by remember { mutableStateOf("") }
     var precioDia by remember { mutableStateOf("") }
     var ubicacion by remember { mutableStateOf("") }
+
+    // Manejar el botón de retroceso cuando el drawer está abierto
+    BackHandler(enabled = drawerState.isOpen) {
+        scope.launch {
+            drawerState.close()
+        }
+    }
 
     // Si no hay sesión, vuelve al login
     if (UserSession.currentUser == null) {
@@ -105,10 +113,23 @@ fun ArrendatarioHomeScreen(navController: NavController) {
 
                 // Opciones del menú
                 ListItem(
-                    modifier = Modifier.clickable { scope.launch { drawerState.close() } },
+                    modifier = Modifier.clickable { 
+                        navController.navigate("arrendatario-home")
+                        scope.launch { drawerState.close() } 
+                    },
                     headlineContent = {
                         Text(
                             text = "Inicio",
+                            color = Color.Black
+                        )
+                    }
+                )
+                
+                ListItem(
+                    modifier = Modifier.clickable { scope.launch { drawerState.close() } },
+                    headlineContent = {
+                        Text(
+                            text = "Agregar Vehículos",
                             color = colorResource(id = R.color.lime_green),
                             fontWeight = FontWeight.Bold
                         )
@@ -129,27 +150,17 @@ fun ArrendatarioHomeScreen(navController: NavController) {
                 )
                 
                 ListItem(
-                    modifier = Modifier.clickable { scope.launch { drawerState.close() } },
+                    modifier = Modifier.clickable {
+                        navController.navigate("arrendatario-notifications")
+                        scope.launch { drawerState.close() }
+                    },
                     headlineContent = {
                         Text(
-                            text = "Estadísticas",
+                            text = "Notificaciones",
                             color = Color.Black
                         )
                     }
                 )
-                
-                    ListItem(
-                        modifier = Modifier.clickable {
-                            navController.navigate("arrendatario-notifications")
-                            scope.launch { drawerState.close() }
-                        },
-                        headlineContent = {
-                            Text(
-                                text = "Notificaciones",
-                                color = Color.Black
-                            )
-                        }
-                    )
 
                 Divider(modifier = Modifier.padding(vertical = 8.dp))
 

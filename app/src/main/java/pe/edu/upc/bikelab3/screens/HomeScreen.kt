@@ -306,27 +306,28 @@ private fun HomeContent(navController: NavController) {
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(upcMonterrico, 15f)
     }
-    val vehiculosRegistrados = remember {
-        VehiculoManager.getAllVehiculos()
+    val vehiculosRegistrados = VehiculoManager.getAllVehiculos()
+    val vehiculosRegistradosDisponibles by remember {
+        derivedStateOf {
+            vehiculosRegistrados.filter { it.disponible }
+        }
     }
     
     // Combinar bicicletas de db.json con vehículos registrados
-    val todosLosVehiculosDisponibles = remember(bicicletasDisponibles, vehiculosRegistrados) {
-        bicicletasDisponibles + vehiculosRegistrados.map { vehiculo ->
-            Bicicleta(
-                id = vehiculo.id,
-                proveedorId = vehiculo.propietarioId,
-                modelo = vehiculo.marcaModelo,
-                marca = vehiculo.marcaModelo.split(" ").firstOrNull() ?: "Personalizada",
-                tipo = vehiculo.tipo,
-                precioPorHora = vehiculo.precioPorHora.toDoubleOrNull() ?: 0.0,
-                ubicacion = vehiculo.ubicacionActual,
-                disponible = true,
-                rating = 4.5, // Rating por defecto para vehículos registrados
-                descripcion = "Vehículo registrado por arrendatario",
-                imagen = "placeholder"
-            )
-        }
+    val todosLosVehiculosDisponibles = bicicletasDisponibles + vehiculosRegistradosDisponibles.map { vehiculo ->
+        Bicicleta(
+            id = vehiculo.id,
+            proveedorId = vehiculo.propietarioId,
+            modelo = vehiculo.marcaModelo,
+            marca = vehiculo.marcaModelo.split(" ").firstOrNull() ?: "Personalizada",
+            tipo = vehiculo.tipo,
+            precioPorHora = vehiculo.precioPorHora.toDoubleOrNull() ?: 0.0,
+            ubicacion = vehiculo.ubicacionActual,
+            disponible = true,
+            rating = 4.5, // Rating por defecto para vehículos registrados
+            descripcion = "Vehículo registrado por arrendatario",
+            imagen = "placeholder"
+        )
     }
     val bikeCenters = remember(todosLosVehiculosDisponibles) {
         baseBikeCenters.mapIndexed { index, (title, position) ->
@@ -405,6 +406,53 @@ private fun HomeContent(navController: NavController) {
     var alquileresUsuario by remember { mutableStateOf(ReservationManager.getUserRentals()) }
     val todasLasBicicletas = remember { LocalJsonReader.getBicicletas(context) }
     val todosLosProveedores = remember { LocalJsonReader.getProveedores(context) }
+    val usuarios = remember { LocalJsonReader.getUsuarios(context) }
+    val vehiculosRegistrados = VehiculoManager.getAllVehiculos()
+    val bicicletasRegistradas by remember {
+        derivedStateOf {
+            vehiculosRegistrados.map { vehiculo ->
+                Bicicleta(
+                    id = vehiculo.id,
+                    proveedorId = vehiculo.propietarioId,
+                    modelo = vehiculo.marcaModelo,
+                    marca = vehiculo.marcaModelo.split(" ").firstOrNull() ?: "Personalizada",
+                    tipo = vehiculo.tipo,
+                    precioPorHora = vehiculo.precioPorHora.toDoubleOrNull() ?: 0.0,
+                    ubicacion = vehiculo.ubicacionActual,
+                    disponible = vehiculo.disponible,
+                    rating = 4.5,
+                    descripcion = "Vehículo registrado por arrendatario",
+                    imagen = "placeholder"
+                )
+            }
+        }
+    }
+    val proveedoresRegistrados by remember {
+        derivedStateOf {
+            vehiculosRegistrados.mapNotNull { vehiculo ->
+                usuarios.find { usuario -> usuario.id == vehiculo.propietarioId && usuario.tipo == "Arrendatario" }
+                    ?.let { usuario ->
+                        Proveedor(
+                            id = usuario.id,
+                            nombre = usuario.nombre,
+                            apellido = usuario.apellido,
+                            correo = usuario.correo,
+                            telefono = usuario.numero,
+                            direccion = vehiculo.ubicacionActual,
+                            rating = 4.5,
+                            bicicletasRegistradas = 1,
+                            fechaRegistro = "2024-01-01"
+                        )
+                    }
+            }
+        }
+    }
+    val bicicletasCombinadas = remember(todasLasBicicletas, bicicletasRegistradas) {
+        todasLasBicicletas + bicicletasRegistradas
+    }
+    val proveedoresCombinados = remember(todosLosProveedores, proveedoresRegistrados) {
+        todosLosProveedores + proveedoresRegistrados
+    }
     
     // Función para refrescar los alquileres
     fun refreshRentals() {
@@ -586,10 +634,12 @@ private fun HomeContent(navController: NavController) {
             items(todosLosAlquileres) { alquiler ->
                 NuevoAlquilerItem(
                     alquiler = alquiler,
-                    bicicletas = todasLasBicicletas,
-                    proveedores = todosLosProveedores,
+                    bicicletas = bicicletasCombinadas,
+                    proveedores = proveedoresCombinados,
                     navController = navController,
-                    onRefresh = { refreshRentals() }
+                    onRefresh = {
+                        alquileresUsuario = ReservationManager.getUserRentals()
+                    }
                 )
                 
                 // Separador verde entre items (excepto el último)
@@ -754,9 +804,10 @@ private fun NuevoAlquilerItem(
         bicicletas.find { it.id == alquiler.bicicletaId }
     }
     
-    val proveedor = bicicleta?.let { 
-        proveedores.find { prov -> prov.id == it.proveedorId }
+    val proveedor = bicicleta?.let { bike ->
+        proveedores.find { prov -> prov.id == bike.proveedorId }
     }
+    val nombreProveedor = proveedor?.let { "${it.nombre} ${it.apellido}".trim() } ?: "Proveedor BikeLab"
     
     // Formatear fecha para mostrar
     val fechaFormateada = when (alquiler.estado) {
@@ -806,6 +857,12 @@ private fun NuevoAlquilerItem(
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
                 color = Color.White
+            )
+            
+            Text(
+                text = nombreProveedor,
+                fontSize = 12.sp,
+                color = Color.LightGray
             )
             
             Spacer(modifier = Modifier.height(4.dp))

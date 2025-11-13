@@ -32,6 +32,7 @@ import pe.edu.upc.bikelab3.network.Bicicleta
 import pe.edu.upc.bikelab3.network.LocalJsonReader
 import pe.edu.upc.bikelab3.network.Proveedor
 import pe.edu.upc.bikelab3.network.ReservationManager
+import pe.edu.upc.bikelab3.network.VehiculoManager
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -124,6 +125,21 @@ fun AlquilerDetailScreen(navController: NavController, alquilerId: Int) {
     } else {
         // Buscar en db.json o crear bicicleta por defecto
         LocalJsonReader.getBicicletas(context).find { it.id == alquiler.bicicletaId }
+            ?: VehiculoManager.getVehiculoPorId(alquiler.bicicletaId)?.let { vehiculo ->
+                Bicicleta(
+                    id = vehiculo.id,
+                    proveedorId = vehiculo.propietarioId,
+                    modelo = vehiculo.marcaModelo,
+                    marca = vehiculo.marcaModelo.split(" ").firstOrNull() ?: "Personalizada",
+                    tipo = vehiculo.tipo,
+                    precioPorHora = vehiculo.precioPorHora.toDoubleOrNull() ?: 0.0,
+                    ubicacion = vehiculo.ubicacionActual,
+                    disponible = vehiculo.disponible,
+                    rating = 4.5,
+                    descripcion = "Vehículo registrado por arrendatario",
+                    imagen = "placeholdertecla2"
+                )
+            }
             ?: Bicicleta(
                 id = alquiler.bicicletaId,
                 proveedorId = 1,
@@ -139,15 +155,30 @@ fun AlquilerDetailScreen(navController: NavController, alquilerId: Int) {
             )
     }
     
-    val proveedor = bicicleta?.let { 
-        LocalJsonReader.getProveedores(context).find { prov -> prov.id == it.proveedorId }
+    val proveedor = bicicleta?.let { bike -> 
+        LocalJsonReader.getProveedores(context).find { prov -> prov.id == bike.proveedorId }
+            ?: LocalJsonReader.getUsuarios(context)
+                .find { usuario -> usuario.id == bike.proveedorId && usuario.tipo == "Arrendatario" }
+                ?.let { usuario ->
+                    Proveedor(
+                        id = usuario.id,
+                        nombre = usuario.nombre,
+                        apellido = usuario.apellido,
+                        correo = usuario.correo,
+                        telefono = usuario.numero,
+                        direccion = bike.ubicacion,
+                        rating = 4.5,
+                        bicicletasRegistradas = 1,
+                        fechaRegistro = "2024-01-01"
+                    )
+                }
             ?: Proveedor(
-                id = it.proveedorId,
+                id = bike.proveedorId,
                 nombre = "Proveedor",
                 apellido = "BikeLab",
                 correo = "proveedor@bikelab.com",
                 telefono = "999999999",
-                direccion = it.ubicacion,
+                direccion = bike.ubicacion,
                 rating = 4.5,
                 bicicletasRegistradas = 1,
                 fechaRegistro = "2024-01-01"
