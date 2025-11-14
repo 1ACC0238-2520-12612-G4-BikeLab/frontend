@@ -1,11 +1,13 @@
 package pe.edu.upc.bikelab3.network
 
 import android.content.Context
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import java.text.SimpleDateFormat
 import java.util.*
 
 object VehiculoManager {
-    private val _vehiculosRegistrados = mutableListOf<VehiculoRegistrado>()
+    private val _vehiculosRegistrados = mutableStateListOf<VehiculoRegistrado>()
     private var context: Context? = null
     
     fun initialize(context: Context) {
@@ -26,8 +28,8 @@ object VehiculoManager {
         return _vehiculosRegistrados.filter { it.propietarioId == propietarioId }
     }
     
-    fun getAllVehiculos(): List<VehiculoRegistrado> {
-        return _vehiculosRegistrados.toList()
+    fun getAllVehiculos(): SnapshotStateList<VehiculoRegistrado> {
+        return _vehiculosRegistrados
     }
     
     fun eliminarVehiculo(vehiculoId: Int) {
@@ -65,6 +67,13 @@ object VehiculoManager {
         val index = _vehiculosRegistrados.indexOfFirst { it.id == vehiculoActualizado.id }
         if (index != -1) {
             _vehiculosRegistrados[index] = vehiculoActualizado
+        }
+    }
+
+    fun actualizarDisponibilidad(vehiculoId: Int, disponible: Boolean) {
+        val vehiculo = getVehiculoPorId(vehiculoId)
+        if (vehiculo != null) {
+            actualizarVehiculo(vehiculo.copy(disponible = disponible))
         }
     }
 }

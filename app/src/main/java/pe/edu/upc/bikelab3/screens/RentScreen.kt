@@ -342,6 +342,7 @@ fun RentScreen(navController: NavController, bicicletaId: Int) {
                         onClick = { 
                             showConfirmationDialog = false
                             ReservationManager.reserveBike(bicicleta.id)
+                            VehiculoManager.actualizarDisponibilidad(bicicleta.id, false)
                             
                             // Crear alquiler
                             val currentUser = UserSession.currentUser
