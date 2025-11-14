@@ -20,7 +20,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
 import pe.edu.upc.bikelab3.R
 import pe.edu.upc.bikelab3.network.NotificationManager
 import pe.edu.upc.bikelab3.network.UserSession
@@ -29,8 +33,141 @@ import pe.edu.upc.bikelab3.network.UserSession
 @Composable
 fun ArrendatarioNotificationsScreen(navController: NavController) {
     val notifications = remember { mutableStateListOf(*NotificationManager.getAllNotifications().toTypedArray()) }
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
 
-    Scaffold(
+    // Manejar el botón de retroceso cuando el drawer está abierto
+    BackHandler(enabled = drawerState.isOpen) {
+        scope.launch {
+            drawerState.close()
+        }
+    }
+
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet {
+                // Perfil del usuario en la parte superior
+                UserSession.currentUser?.let { user ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                            .clickable {
+                                navController.navigate("arrendatario-profile")
+                                scope.launch { drawerState.close() }
+                            },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // Avatar del usuario
+                        Box(
+                            modifier = Modifier
+                                .size(48.dp)
+                                .background(
+                                    colorResource(id = R.color.lime_green),
+                                    CircleShape
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = user.nombre.first().toString().uppercase(),
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                        }
+                        
+                        Spacer(modifier = Modifier.width(12.dp))
+                        
+                        Column {
+                            Text(
+                                text = "${user.nombre.uppercase()} ${user.apellido.uppercase()}",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Black
+                            )
+                            Text(
+                                text = user.correo,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.Gray
+                            )
+                        }
+                    }
+                    
+                    Divider(modifier = Modifier.padding(horizontal = 16.dp))
+                }
+
+                // Opciones del menú
+                ListItem(
+                    modifier = Modifier.clickable { 
+                        navController.navigate("arrendatario-home")
+                        scope.launch { drawerState.close() } 
+                    },
+                    headlineContent = {
+                        Text(
+                            text = "Inicio",
+                            color = Color.Black
+                        )
+                    }
+                )
+                
+                ListItem(
+                    modifier = Modifier.clickable { 
+                        navController.navigate("arrendatario-home")
+                        scope.launch { drawerState.close() } 
+                    },
+                    headlineContent = {
+                        Text(
+                            text = "Agregar Vehículos",
+                            color = Color.Black
+                        )
+                    }
+                )
+                
+                ListItem(
+                    modifier = Modifier.clickable { 
+                        navController.navigate("arrendatario-mis-vehiculos")
+                        scope.launch { drawerState.close() } 
+                    },
+                    headlineContent = {
+                        Text(
+                            text = "Mis Vehículos",
+                            color = Color.Black
+                        )
+                    }
+                )
+                
+                ListItem(
+                    modifier = Modifier.clickable { scope.launch { drawerState.close() } },
+                    headlineContent = {
+                        Text(
+                            text = "Notificaciones",
+                            color = colorResource(id = R.color.lime_green),
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                )
+
+                Divider(modifier = Modifier.padding(vertical = 8.dp))
+
+                ListItem(
+                    modifier = Modifier.clickable {
+                        UserSession.currentUser = null
+                        navController.navigate("login") {
+                            popUpTo("arrendatario-home") { inclusive = true }
+                        }
+                    },
+                    headlineContent = {
+                        Text(
+                            text = "Cerrar Sesión",
+                            color = Color.Black
+                        )
+                    }
+                )
+            }
+        }
+    ) {
+        Scaffold(
         topBar = {
             TopAppBar(
                 title = {
@@ -54,7 +191,7 @@ fun ArrendatarioNotificationsScreen(navController: NavController) {
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigate("arrendatario-home") }) {
+                    IconButton(onClick = { scope.launch { drawerState.open() } }) {
                         Icon(
                             Icons.Default.Menu,
                             contentDescription = "Menú",
@@ -125,6 +262,7 @@ fun ArrendatarioNotificationsScreen(navController: NavController) {
                 }
             }
         }
+    }
     }
 }
 
