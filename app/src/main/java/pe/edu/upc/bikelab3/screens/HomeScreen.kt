@@ -626,7 +626,6 @@ private fun HomeContent(navController: NavController) {
             textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
         
-        // Lista de alquileres
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(0.dp)
@@ -665,13 +664,9 @@ private fun BikeCardFromDB(
     val proveedores = remember { LocalJsonReader.getProveedores(context) }
     val usuarios = remember { LocalJsonReader.getUsuarios(context) }
     
-    // Buscar proveedor en db.json o usuario arrendatario
     val proveedor = proveedores.find { it.id == bicicleta.proveedorId }
     val usuarioArrendatario = usuarios.find { it.id == bicicleta.proveedorId && it.tipo == "Arrendatario" }
-    
-    // Determinar el nombre y apellido a mostrar
-    // Si es un vehículo registrado por arrendatario, usar el nombre del arrendatario
-    // Si es un vehículo de db.json, usar el nombre del proveedor
+
     val nombreMostrar = if (usuarioArrendatario != null) {
         usuarioArrendatario.nombre
     } else {
